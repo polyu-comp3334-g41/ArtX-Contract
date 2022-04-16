@@ -18,8 +18,9 @@ describe("ArtX contract", function () {
 
   describe("Mint", function () {
     it("Should mint a token for addr1", async function () {
-        await artX.connect(addr1).mint(uri + "1")
+        const ret = await artX.connect(addr1).mint(uri + "1")
 
+        console.log(ret)
         expect(await artX.ownerOf(1)).to.equal(addr1.address)
     });
 
@@ -47,14 +48,22 @@ describe("ArtX contract", function () {
   })
 
   describe("Close", function() {
-      it("Should list token 1", async function () {
+      it("Should close swap by maker", async function () {
         await artX.connect(addr2).makeSwap(1, 2);
-
         expect(await artX.isInSwap(1)).to.be.true;
+
+        await artX.connect(addr2).closeSwap(1);
+
+        expect(await artX.isInSwap(1)).to.be.false; // not in swap
+        expect(await artX.ownerOf(1)).to.equal(addr2.address); // not swapped
+        expect(await artX.ownerOf(2)).to.equal(addr1.address);
       });
 
-      it("Should close swap", async function () {
-        await artX.connect(addr2).closeSwap(1);
+      it("Should close swap by taker", async function () {
+        await artX.connect(addr2).makeSwap(1, 2);
+        expect(await artX.isInSwap(1)).to.be.true;
+
+        await artX.connect(addr1).closeSwap(1);
 
         expect(await artX.isInSwap(1)).to.be.false;  // not in swap
         expect(await artX.ownerOf(1)).to.equal(addr2.address);  // not swapped
