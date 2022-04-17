@@ -24,5 +24,8 @@ module.exports = {
       url: "https://ropsten.infura.io/v3/b07e894e4e114415b6423372eb7c693e", //Infura url with projectId
       accounts: [process.env.PRIVATE_KEY], // add the account that will deploy the contract (private key)
     },
-  }
-}
+    hardhat: {
+      chainId: 1337,
+    },
+  },
+};
